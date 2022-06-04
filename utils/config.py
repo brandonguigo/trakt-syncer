@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from configparser import ConfigParser, NoSectionError, NoOptionError
@@ -40,6 +41,15 @@ class Config:
             print('ERROR: %s not setup - missing user_ids' % self.credential_file)
             sys.exit(1)
         self.user_ids = [int(n) for n in user_ids.split(',')]
+
+        try:
+            self.autorization = self.config.get('Trakt', 'authorization')
+            self.autorization =  json.loads(self.autorization)
+        except (NoSectionError, NoOptionError):
+            print('INFO: %s not setup - missing autorization' % self.credential_file)
+
+    def set_value(self, section, option, value):
+        self.config.set(section, option, value)
 
     def write_settings(self):
         """Write config back to settings file"""

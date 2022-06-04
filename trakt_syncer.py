@@ -55,6 +55,7 @@ Tautulli > Settings > Notification Agents > New Script > Script Arguments:
   Close
 """
 import argparse
+import json
 import os
 import sys
 from configparser import ConfigParser, NoSectionError, NoOptionError
@@ -134,11 +135,17 @@ class Application(object):
         return self.is_authenticating.wait()
 
     def run(self):
-        self.authenticate()
+        if hasattr(config, "autorization"):
+            self.authorization = config.autorization
 
         if not self.authorization:
-            print('ERROR: Authentication required')
-            exit(1)
+            self.authenticate()
+            print(self.authorization)
+            config.set_value("Trakt", "authorization", json.dumps(self.authorization))
+            config.write_settings()
+            if not self.authorization:
+                print('ERROR: Authentication required')
+                exit(1)
 
         print(config)
         if self.userId not in config.user_ids and not self.userId == -1:

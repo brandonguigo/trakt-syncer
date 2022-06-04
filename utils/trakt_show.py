@@ -2,14 +2,15 @@ from utils.trakt_client import TraktClient
 from utils.trakt_item import TraktItem
 
 
-class TraktMovie(TraktItem):
-    def __init__(self, tmdb_id):
-        self.tmdb_id = tmdb_id
+class TraktEpisode(TraktItem):
+    def __init__(self, tvdb_id: str):
+        self.tvdb_id = tvdb_id
 
     def generateTraktDict(self) -> dict:
         return {
             'ids': {
-                'tmdb': self.tmdb_id
+                'tvdb': self.tvdb_id
             }
         }
+
 

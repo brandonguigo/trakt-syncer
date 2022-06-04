@@ -48,7 +48,7 @@ Tautulli > Settings > Notification Agents > New Script > Script Arguments:
 
   Select: Watched
   Arguments:  --userId {user_id} --contentType {media_type}
-              <movie>--imdbId {imdb_id}</movie>
+              <movie>--imdbId {imdb_id} --progress {progress_percent}</movie>
               <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num} --progress {progress_percent}</episode>
 
   Save
@@ -71,6 +71,8 @@ from threading import Condition
 import logging
 import os
 
+from utils.trakt_show import TraktShow
+
 TAUTULLI_ENCODING = os.getenv('TAUTULLI_ENCODING', 'UTF-8')
 APP_VERSION = "trakt-sync"
 APP_DATE = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
@@ -84,18 +86,22 @@ def decodeArgs(arg):
 
 
 class Application(object):
-    def __init__(self, config, user_id, action, tvdb_id, season, episode, progress, tmdb):
-        self.config = config
+    def __init__(self, user_id, action, tvdb_id=None, season=None, episode=None, progress=None, tmdbId=None):
         self.userId = user_id
         self.action = action
 
-        self.episode = TraktEpisode(tvdb_id, season, episode, progress)
-        self.movie = TraktMovie(tmdb)
+        if season is not None and episode is not None and progress is not None:
+            self.show = TraktShow(tvdb_id)
+            self.episode = TraktEpisode(season, episode, progress, self.show)
+        elif tmdbId is not None and progress is not None:
+            self.movie = TraktMovie(tmdbId, progress)
+        else:
+            print("Wrong parameters")
 
         self.is_authenticating = Condition()
 
         self.authorization = None
-        self.trakt_client = TraktClient(self.config)
+        self.trakt_client = TraktClient(config)
 
 
         # Bind trakt events
@@ -122,7 +128,7 @@ class Application(object):
             .on('poll', self.on_poll)
 
         # Start polling for authentication token
-        poller.start(daemon=False)
+        poller.start(daemon=True)
 
         # Wait for authentication to complete
         return self.is_authenticating.wait()
@@ -134,12 +140,16 @@ class Application(object):
             print('ERROR: Authentication required')
             exit(1)
 
-        if self.userId not in self.config.user_ids and not self.userId == -1:
+        print(config)
+        if self.userId not in config.user_ids and not self.userId == -1:
             print('We will not sync for this user')
             sys.exit(0)
 
         if self.action == 'startScrobble':
-            print("not yet implemented")
+            with Trakt.configuration.oauth.from_response(self.authorization):
+                self.trakt_client.startScrobble(show=self.show if hasattr(self, 'show') else None,
+                                                episode=self.episode if hasattr(self, 'episode') else None,
+                                                movie=self.movie if hasattr(self, 'movie') else None)
         elif self.action == 'pauseScrobble':
             print("not yet implemented")
         elif self.action == 'stopScrobble':
@@ -233,7 +243,7 @@ if __name__ == "__main__":
     parser.add_argument('--action', required=True, type=str,
                         help='The action required, including pushMovie or pushEpisode.')
 
-    parser.add_argument('--tvdbId', type=str,
+    parser.add_argument('--tvdbId', type=int,
                         help='Title of the serie.')
 
     parser.add_argument('--season', type=int,
@@ -245,11 +255,23 @@ if __name__ == "__main__":
     parser.add_argument('--progress', type=int,
                         help='Progress inside the episode.')
 
-    parser.add_argument('--imdbId', type=str,
+    parser.add_argument('--tmdbId', type=str,
                         help='IMDB ID.')
 
     opts = parser.parse_args()
 
-    app = Application(config, opts.userId, opts.action, opts.tvdbId, opts.season, opts.episode, opts.progress,
-                      opts.imbdId)
+    app = Application(opts.userId,
+                      opts.action,
+                      opts.tvdbId if hasattr(opts, 'tvdbId') else None,
+                      opts.season if hasattr(opts, 'season') else None,
+                      opts.episode if hasattr(opts, 'episode') else None,
+                      opts.progress if hasattr(opts, 'progress') else None,
+                      opts.tmdbId if hasattr(opts, 'tmdbId') else None)
+
+    Trakt.base_url = 'https://api.trakt.tv'
+
+    Trakt.configuration.defaults.client(
+        id=config.client_id,
+        secret=config.client_secret
+    )
     app.run()

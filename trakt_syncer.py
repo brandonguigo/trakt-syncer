@@ -151,9 +151,15 @@ class Application(object):
                                                 episode=self.episode if hasattr(self, 'episode') else None,
                                                 movie=self.movie if hasattr(self, 'movie') else None)
         elif self.action == 'pauseScrobble':
-            print("not yet implemented")
+            with Trakt.configuration.oauth.from_response(self.authorization):
+                self.trakt_client.pauseScrobble(show=self.show if hasattr(self, 'show') else None,
+                                                episode=self.episode if hasattr(self, 'episode') else None,
+                                                movie=self.movie if hasattr(self, 'movie') else None)
         elif self.action == 'stopScrobble':
-            print("not yet implemented")
+            with Trakt.configuration.oauth.from_response(self.authorization):
+                self.trakt_client.stopScrobble(show=self.show if hasattr(self, 'show') else None,
+                                                episode=self.episode if hasattr(self, 'episode') else None,
+                                                movie=self.movie if hasattr(self, 'movie') else None)
         else:
             print('ERROR: %s not found - invalid action' % opts.action)
 

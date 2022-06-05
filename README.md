@@ -1,15 +1,16 @@
-# Tautulli watched sync
-Automatically synchronize watched TV Shows to Trakt.tv and movies to Letterboxd
+# Trakt-syncer
+Push your scrobbling activity to Trakt.tv for movies and tv shows
 
 ## Setup
-Download `trakt_letterboxd_sync.py` and `sync_settings.ini.example` to your Tautulli host.
-Rename `sync_settings.ini.example` to `sync_settings.ini` and add the `user_ids`, `client_id`, `client_secret`, `api_key` and `api_secret`. See below for more info on these settings.
+1. Clone this repo inside your Tautulli host.
+2. Edit `config` file and add the `user_ids`, `client_id`, `client_secret`. See below for more info on these settings.
+3. Clone the [trakt.py repo](https://github.com/fuzeman/trakt.py) inside `./modules/trakt`. Since tautulli can be running inside a Docker container which we sometimes don't have access on some seedbox providers, Tautulli will launch the script his python3 which don't have trakt.py so we need to have the trakt module source inside our source dir. 
 
-**Important!** Make sure `sync-settings.ini` is writable
+**Important!** Make sure `config` is writable
+
 
 ### Settings
-`./sync-settings.ini`
-
+`./config`
 ```
   [Plex]
   user_ids: a comma separated list of user ids, only entries for these users will be synced
@@ -18,19 +19,9 @@ Rename `sync_settings.ini.example` to `sync_settings.ini` and add the `user_ids`
   [Trakt]:
   Update `client_id` with the `client_id` of your registered application, see here:
     https://trakt.tv/oauth/applications > Choose your application
-
-  To set the access code use `urn:ietf:wg:oauth:2.0:oob` as a redirect URI on your application.
-  Then execute the script:
-  python ./trakt_letterboxd_sync.py --contentType trakt_authenticate --userId -1
-  And follow the instructions shown.
-
-  [Letterboxd]
-  Update `api_key` and `api_secret` with your Letterboxd API Key and API Shared Secret respectively.
-  Look [here](https://letterboxd.com/api-beta/) as for how to receive these credentials.
-
-  To set the access code execute the script:
-  python ./trakt_letterboxd_sync.py --contentType letterboxd_authenticate --userId -1
-  And follow the instructions shown.
+  
+  Then, launch manually a stopScrobble command to generate and store autorization for Trakt.tv API : 
+  ./trakt_syncer.py --action stopScrobble --userId {tautulli_user_id}  --tmdbId {tmdb_id} --progress 60
 ```
 
 ### Tautulli
@@ -42,30 +33,45 @@ Configuration:
 Tautulli > Settings > Notification Agents > New Script > Configuration:
 
   Script Folder: /path/to/your/scripts
-  Script File: ./trakt_letterboxd_sync.py (Should be selectable in a dropdown list)
+  Script File: ./trakt_syncer.py (Should be selectable in a dropdown list)
   Script Timeout: {timeout}
-  Description: Trakt.tv and Letterboxd sync
+  Description: Trakt.tv sync
   Save
 
 Triggers:
 Tautulli > Settings > Notification Agents > New Script > Triggers:
   
-  Check: Watched
+  Check: 
+    Playback Start
+    Playback Stop
+    Playback Pause
+    Playback Resume
   Save
   
 Conditions:
 Tautulli > Settings > Notification Agents > New Script > Conditions:
   
-  Set Conditions: [{condition} | {operator} | {value} ]
+  (Optional)Set the Condition you want : send only is username match...
   Save
   
 Script Arguments:
 Tautulli > Settings > Notification Agents > New Script > Script Arguments:
   
-  Select: Watched
-  Arguments:  --userId {user_id} --contentType {media_type}
-              <movie>--imdbId {imdb_id}</movie>
-              <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode>
+  Select: 
+        Playback Start
+        Arguments:  ---action startScrobble --userId {user_id}  --progress {progress_percent} <movie>--tmdbId {themoviedb_id}</movie> <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode>
+        
+        Playback Stop
+        Arguments: --action pauseScrobble --userId {user_id}  --progress {progress_percent} <movie>--tmdbId {themoviedb_id}</movie> <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode>
+        
+        Playback Pause
+        Arguments: --action pauseScrobble --userId {user_id}  --progress {progress_percent} <movie>--tmdbId {themoviedb_id}</movie> <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode>
+        
+        Playback Resume
+        Arguments: --action startScrobble --userId {user_id}  --progress {progress_percent} <movie>--tmdbId {themoviedb_id}</movie> <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode>
+        
+        Watched
+        Arguments: --action stopScrobble --userId {user_id}  --progress {progress_percent} <movie>--tmdbId {themoviedb_id}</movie> <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode> 
 
   Save
   Close

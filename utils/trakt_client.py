@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from trakt import Trakt
+from modules.trakt import Trakt
 
 from utils.config import Config
 from utils.trakt_episode import TraktEpisode

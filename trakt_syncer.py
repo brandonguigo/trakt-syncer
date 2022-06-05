@@ -57,20 +57,19 @@ Tautulli > Settings > Notification Agents > New Script > Script Arguments:
 """
 import argparse
 import json
-import os
 import sys
-from configparser import ConfigParser, NoSectionError, NoOptionError
 from datetime import datetime
+
+from setuptools import setup
 
 from utils.config import Config
 from utils.trakt_client import TraktClient
 from utils.trakt_movie import TraktMovie
 from utils.trakt_episode import TraktEpisode
 
-from trakt import Trakt
+from modules.trakt import Trakt
 
 from threading import Condition
-import logging
 import os
 
 from utils.trakt_show import TraktShow

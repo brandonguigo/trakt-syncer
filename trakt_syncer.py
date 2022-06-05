@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 """
 Description: Synchronize a watch episode or movie to trakt
 Author: Brandon Guigo

@@ -16,7 +16,7 @@ class TraktClient:
         self.config = config
 
     #TODO
-    def startScrobble(self, episode=None, show = None, movie = None):
+    def startScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
                 print("Send Start Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
@@ -44,7 +44,7 @@ class TraktClient:
             sys.exit(1)
 
     #TODO
-    def pauseScrobble(self, episode = None, show = None, movie = None):
+    def pauseScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
                 print("Send Pause Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
@@ -72,7 +72,7 @@ class TraktClient:
             sys.exit(1)
 
     # TODO
-    def stopScrobble(self, episode = None, show = None, movie = None):
+    def stopScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
                 print("Send Stop Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))

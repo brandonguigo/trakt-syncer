@@ -6,7 +6,7 @@ class TraktMovie(TraktItem):
         self.tmdb_id = tmdb_id
         self.progress = progress
 
-    def generateTraktDict(self):
+    def generateTraktDict(self) -> dict:
         return {
             'ids': {
                 'tmdb': self.tmdb_id

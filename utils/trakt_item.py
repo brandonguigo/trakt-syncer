@@ -1,8 +1,7 @@
-from abc import abstractmethod, ABCMeta
+from abc import ABC, abstractmethod
 
 
-class TraktItem():
-    __metaclass__ = ABCMeta
+class TraktItem(ABC):
     @abstractmethod
-    def generateTraktDict(self):
+    def generateTraktDict(self) -> dict:
         pass

@@ -3,13 +3,13 @@ from utils.trakt_show import TraktShow
 
 
 class TraktEpisode(TraktItem):
-    def __init__(self, season_num, episode_num, progress, show):
+    def __init__(self, season_num: int, episode_num: int, progress: float, show: TraktShow):
         self.season_num = season_num
         self.episode_num = episode_num
         self.progress = progress
         self.show = show
 
-    def generateTraktDict(self):
+    def generateTraktDict(self) -> dict:
         return {
             'season': self.season_num,
             'number': self.episode_num,

@@ -60,14 +60,12 @@ import json
 import sys
 from datetime import datetime
 
-from setuptools import setup
-
 from utils.config import Config
 from utils.trakt_client import TraktClient
 from utils.trakt_movie import TraktMovie
 from utils.trakt_episode import TraktEpisode
 
-from modules.trakt import Trakt
+from trakt import Trakt
 
 from threading import Condition
 import os

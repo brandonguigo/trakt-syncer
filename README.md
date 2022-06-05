@@ -4,13 +4,14 @@ Push your scrobbling activity to Trakt.tv for movies and tv shows
 ## Setup
 1. Clone this repo inside your Tautulli host.
 2. Edit `config` file and add the `user_ids`, `client_id`, `client_secret`. See below for more info on these settings.
-3. Clone the [trakt.py repo](https://github.com/fuzeman/trakt.py) inside `./modules/trakt`. Since tautulli can be running inside a Docker container which we sometimes don't have access on some seedbox providers, Tautulli will launch the script his python3 which don't have trakt.py so we need to have the trakt module source inside our source dir. 
+3. Launch `git clone --recurse-submodules https://github.com/brandonguigo/trakt-syncer.git` or install via pip the requirement file `python3 -m pip install -r requirements.txt`. Since tautulli can be running inside a Docker container which we sometimes don't have access on some seedbox providers, Tautulli will launch the script his python3 which don't have trakt.py so we need to have the trakt module source inside our source dir. 
+4. `chmod a+x trakt-syncer.py`
 
 **Important!** Make sure `config` is writable
 
 
 ### Settings
-`./config`
+`./config
 ```
   [Plex]
   user_ids: a comma separated list of user ids, only entries for these users will be synced

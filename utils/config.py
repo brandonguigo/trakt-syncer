@@ -8,8 +8,11 @@ class Config:
     def __init__(self):
         self.credential_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
         self.credential_file = 'config'
+        self.access_token = None
+        self.refresh_token = None
 
         self.config = ConfigParser()
+
         try:
             with open('%s/%s' % (self.credential_path, self.credential_file)) as f:
                 self.config.read_file(f)
@@ -43,10 +46,16 @@ class Config:
         self.user_ids = [int(n) for n in user_ids.split(',')]
 
         try:
-            self.autorization = self.config.get('Trakt', 'authorization')
-            self.autorization =  json.loads(self.autorization)
+            self.access_token = self.config.get('Trakt', 'access_token')
         except (NoSectionError, NoOptionError):
-            print('INFO: %s not setup - missing autorization' % self.credential_file)
+            print('INFO: %s not setup - missing access_token' % self.credential_file)
+            print('INFO: access_token = None')
+
+        try:
+            self.refresh_token = self.config.get('Trakt', 'refresh_token')
+        except (NoSectionError, NoOptionError):
+            print('INFO: %s not setup - missing refresh_token' % self.credential_file)
+            print('INFO: refresh_token = None')
 
     def set_value(self, section, option, value):
         self.config.set(section, option, value)

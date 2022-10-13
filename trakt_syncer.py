@@ -65,7 +65,6 @@ from utils.trakt_client import TraktClient
 from utils.trakt_movie import TraktMovie
 from utils.trakt_episode import TraktEpisode
 
-from trakt import Trakt
 
 from threading import Condition
 import os
@@ -88,6 +87,7 @@ class Application(object):
     def __init__(self, user_id, action, tvdb_id=None, season=None, episode=None, progress=None, tmdbId=None):
         self.userId = user_id
         self.action = action
+        self.traktClient = TraktClient(config)
 
         if season is not None and episode is not None and progress is not None:
             self.show = TraktShow(tvdb_id)
@@ -97,74 +97,35 @@ class Application(object):
         else:
             print("Wrong parameters")
 
-        self.is_authenticating = Condition()
-
-        self.authorization = None
-        self.trakt_client = TraktClient(config)
-
-
-        # Bind trakt events
-        Trakt.on('oauth.token_refreshed', self.on_token_refreshed)
-
-    def authenticate(self):
-        if not self.is_authenticating.acquire(blocking=False):
-            print('Authentication has already been started')
-            return False
-
-        # Request new device code
-        code = Trakt['oauth/device'].code()
-
-        print('Enter the code "%s" at %s to authenticate your account' % (
-            code.get('user_code'),
-            code.get('verification_url')
-        ))
-
-        # Construct device authentication poller
-        poller = Trakt['oauth/device'].poll(**code) \
-            .on('aborted', self.on_aborted) \
-            .on('authenticated', self.on_authenticated) \
-            .on('expired', self.on_expired) \
-            .on('poll', self.on_poll)
-
-        # Start polling for authentication token
-        poller.start(daemon=True)
-
-        # Wait for authentication to complete
-        return self.is_authenticating.wait()
-
     def run(self):
-        if hasattr(config, "autorization"):
-            self.authorization = config.autorization
+        print(str(config) + "\n\n\n")
+        if config.access_token is None:
+            #TODO: request access token
+            print("INFO: access_token not found, requesting it...")
+            auth_result = self.traktClient.authenticate()
+            if not auth_result:
+                print("ERROR: authentication failed")
+                sys.exit(1)
 
-        if not self.authorization:
-            self.authenticate()
-            print(self.authorization)
-            config.set_value("Trakt", "authorization", json.dumps(self.authorization))
-            config.write_settings()
-            if not self.authorization:
-                print('ERROR: Authentication required')
-                exit(1)
-
-        print(config)
         if self.userId not in config.user_ids and not self.userId == -1:
             print('We will not sync for this user')
             sys.exit(0)
 
         if self.action == 'startScrobble':
-            with Trakt.configuration.oauth.from_response(self.authorization):
-                self.trakt_client.startScrobble(show=self.show if hasattr(self, 'show') else None,
-                                                episode=self.episode if hasattr(self, 'episode') else None,
-                                                movie=self.movie if hasattr(self, 'movie') else None)
+            #TODO: redo the action using the Trakt Official API with custom client
+            self.traktClient.startScrobble(show=self.show if hasattr(self, 'show') else None,
+                                            episode=self.episode if hasattr(self, 'episode') else None,
+                                            movie=self.movie if hasattr(self, 'movie') else None)
         elif self.action == 'pauseScrobble':
-            with Trakt.configuration.oauth.from_response(self.authorization):
-                self.trakt_client.pauseScrobble(show=self.show if hasattr(self, 'show') else None,
-                                                episode=self.episode if hasattr(self, 'episode') else None,
-                                                movie=self.movie if hasattr(self, 'movie') else None)
+            #TODO: redo the action using the Trakt Official API with custom client
+            self.traktClient.pauseScrobble(show=self.show if hasattr(self, 'show') else None,
+                                            episode=self.episode if hasattr(self, 'episode') else None,
+                                            movie=self.movie if hasattr(self, 'movie') else None)
         elif self.action == 'stopScrobble':
-            with Trakt.configuration.oauth.from_response(self.authorization):
-                self.trakt_client.stopScrobble(show=self.show if hasattr(self, 'show') else None,
-                                                episode=self.episode if hasattr(self, 'episode') else None,
-                                                movie=self.movie if hasattr(self, 'movie') else None)
+            #TODO: redo the action using the Trakt Official API with custom client
+            self.traktClient.stopScrobble(show=self.show if hasattr(self, 'show') else None,
+                                            episode=self.episode if hasattr(self, 'episode') else None,
+                                            movie=self.movie if hasattr(self, 'movie') else None)
         else:
             print('ERROR: %s not found - invalid action' % opts.action)
 
@@ -184,6 +145,7 @@ class Application(object):
         #     # Current token is still valid
         #     print(Trakt['sync/collection'].movies())
 
+    #TODO: move the logic of authentication inside a new trakt client
     def on_aborted(self):
         """Device authentication aborted.
 
@@ -279,10 +241,10 @@ if __name__ == "__main__":
                       opts.progress if hasattr(opts, 'progress') else None,
                       opts.tmdbId if hasattr(opts, 'tmdbId') else None)
 
-    Trakt.base_url = 'https://api.trakt.tv'
-
-    Trakt.configuration.defaults.client(
-        id=config.client_id,
-        secret=config.client_secret
-    )
+    # Trakt.base_url = 'https://api.trakt.tv'
+    #
+    # Trakt.configuration.defaults.client(
+    #     id=config.client_id,
+    #     secret=config.client_secret
+    # )
     app.run()

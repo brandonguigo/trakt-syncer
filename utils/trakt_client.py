@@ -77,7 +77,7 @@ class TraktClient:
                     print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
                     sys.exit(1)
 
-                print("Scrobble Start successful for season: %s episode: %s for the TV Show :%s" % (data["episode"]["season"], data["episode"]["number"], data["show"]["title"]))
+                print("Scrobble Start successful")
                 sys.exit(0)
             else:
                 print("episode is null, cennot continue")
@@ -116,19 +116,42 @@ class TraktClient:
                 #     episode=episode.generateTraktDict(),
                 #     progress=episode.progress
                 # )
-                print("Scrobble Pause successful")
-                sys.exit(0)
-            else:
-                print("episode is null, cennot continue")
+                status_code, data = self.traktApiClient.post(
+                    TRAKT_API_URL + "scrobble/pause",
+                    {
+                        "episode": episode.generateTraktDict(),
+                        "progress": episode.progress,
+                        "app_version": "1.0",
+                        "app_date": datetime.now().strftime("%Y-%m-%d")
+                    }
+                )
+            if status_code == 403:
+                #TODO: refresh token here and retry
+                print("INFO: Forbidden, refreshing token and retry")
+            elif status_code != 201:
+                print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
                 sys.exit(1)
+            print("Scrobble Pause successful")
+            sys.exit(0)
         elif movie is not None:
             print("send movie to scrobble")
             print("Send Pause Scrobble %s to Trakt.tv" % movie.tmdb_id)
             #TODO: call the trakt api with the access token
-            # Trakt['scrobble'].pause(
-            #     movie=movie.generateTraktDict(),
-            #     progress=movie.progress
-            # )
+            status_code, data = self.traktApiClient.post(
+                TRAKT_API_URL + "scrobble/pause",
+                {
+                    "movie": movie.generateTraktDict(),
+                    "progress": movie.progress,
+                    "app_version": "1.0",
+                    "app_date": datetime.now().strftime("%Y-%m-%d")
+                }
+            )
+            if status_code == 403:
+                #TODO: refresh token here and retry
+                print("INFO: Forbidden, refreshing token and retry")
+            elif status_code != 201:
+                print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
+                sys.exit(1)
             print("Scrobble Pause successful")
             sys.exit(0)
         else:

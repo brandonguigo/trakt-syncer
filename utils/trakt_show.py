@@ -2,12 +2,12 @@ from utils.trakt_item import TraktItem
 
 
 class TraktShow(TraktItem):
-    def __init__(self, tvdb_id: int):
-        self.tvdb_id = tvdb_id
+    def __init__(self, m: int):
+        self.tmdb_id = m
 
-    def generateTraktDict(self) -> dict:
+    def generateEpisodeTraktDict(self) -> dict:
         return {
             'ids': {
-                'tvdb': self.tvdb_id,
+                'tvdb': self.tmdb_id,
             }
         }

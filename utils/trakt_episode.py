@@ -9,12 +9,15 @@ class TraktEpisode(TraktItem):
         self.progress = progress
         self.show = show
 
-    def generateTraktDict(self) -> dict:
+    def generateEpisodeTraktDict(self) -> dict:
         return {
             'season': self.season_num,
             'number': self.episode_num,
-            'ids': {
-                'tvdb': self.show.tvdb_id,
-            }
         }
 
+    def generateShowTraktDict(self) -> dict:
+        return {
+            'ids': {
+                'tmdb': self.show.tmdb_id,
+            }
+        }

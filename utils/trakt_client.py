@@ -60,11 +60,12 @@ class TraktClient:
     def startScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
-                print("Send Start Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
+                print("Send Start Scrobble %s - S%sE%s to Trakt.tv" % (show.tmdb_id, episode.season_num, episode.episode_num))
                 status_code, data = self.traktApiClient.post(
                     TRAKT_API_URL + "scrobble/start",
                     {
-                        "episode": episode.generateTraktDict(),
+                        "episode": episode.generateEpisodeTraktDict(),
+                        "show": episode.generateShowTraktDict(),
                         "progress": episode.progress,
                         "app_version": "1.0",
                         "app_date": datetime.now().strftime("%Y-%m-%d")
@@ -87,7 +88,7 @@ class TraktClient:
             status_code, data = self.traktApiClient.post(
                 TRAKT_API_URL + "scrobble/start",
                 {
-                    "movie": movie.generateTraktDict(),
+                    "movie": movie.generateEpisodeTraktDict(),
                     "progress": movie.progress,
                     "app_version": "1.0",
                     "app_date": datetime.now().strftime("%Y-%m-%d")
@@ -109,7 +110,7 @@ class TraktClient:
     def pauseScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
-                print("Send Pause Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
+                print("Send Pause Scrobble %s - S%sE%s to Trakt.tv" % (show.tmdb_id, episode.season_num, episode.episode_num))
                 #TODO: call the trakt api with the access token
                 # Trakt['scrobble'].pause(
                 #     show=show.generateTraktDict(),
@@ -119,18 +120,19 @@ class TraktClient:
                 status_code, data = self.traktApiClient.post(
                     TRAKT_API_URL + "scrobble/pause",
                     {
-                        "episode": episode.generateTraktDict(),
+                        "episode": episode.generateEpisodeTraktDict(),
+                        "show": episode.generateShowTraktDict(),
                         "progress": episode.progress,
                         "app_version": "1.0",
                         "app_date": datetime.now().strftime("%Y-%m-%d")
                     }
                 )
-            if status_code == 403:
-                #TODO: refresh token here and retry
-                print("INFO: Forbidden, refreshing token and retry")
-            elif status_code != 201:
-                print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
-                sys.exit(1)
+                if status_code == 403:
+                    #TODO: refresh token here and retry
+                    print("INFO: Forbidden, refreshing token and retry")
+                elif status_code != 201:
+                    print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
+                    sys.exit(1)
             print("Scrobble Pause successful")
             sys.exit(0)
         elif movie is not None:
@@ -140,7 +142,7 @@ class TraktClient:
             status_code, data = self.traktApiClient.post(
                 TRAKT_API_URL + "scrobble/pause",
                 {
-                    "movie": movie.generateTraktDict(),
+                    "movie": movie.generateEpisodeTraktDict(),
                     "progress": movie.progress,
                     "app_version": "1.0",
                     "app_date": datetime.now().strftime("%Y-%m-%d")
@@ -162,7 +164,7 @@ class TraktClient:
     def stopScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
-                print("Send Stop Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
+                print("Send Stop Scrobble %s - S%sE%s to Trakt.tv" % (show.tmdb_id, episode.season_num, episode.episode_num))
                 #TODO: call the trakt api with the access token
                 # Trakt['scrobble'].stop(
                 #     show=show.generateTraktDict(),
@@ -172,18 +174,19 @@ class TraktClient:
                 status_code, data = self.traktApiClient.post(
                     TRAKT_API_URL + "scrobble/stop",
                     {
-                        "episode": episode.generateTraktDict(),
+                        "episode": episode.generateEpisodeTraktDict(),
+                        "show": episode.generateShowTraktDict(),
                         "progress": episode.progress,
                         "app_version": "1.0",
                         "app_date": datetime.now().strftime("%Y-%m-%d")
                     }
                 )
-            if status_code == 403:
-                #TODO: refresh token here and retry
-                print("INFO: Forbidden, refreshing token and retry")
-            elif status_code != 201:
-                print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
-                sys.exit(1)
+                if status_code == 403:
+                    #TODO: refresh token here and retry
+                    print("INFO: Forbidden, refreshing token and retry")
+                elif status_code != 201:
+                    print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
+                    sys.exit(1)
             print("Scrobble Stop successful")
             sys.exit(0)
         elif movie is not None:
@@ -192,7 +195,7 @@ class TraktClient:
             status_code, data = self.traktApiClient.post(
                 TRAKT_API_URL + "scrobble/stop",
                 {
-                    "movie": movie.generateTraktDict(),
+                    "movie": movie.generateEpisodeTraktDict(),
                     "progress": movie.progress,
                     "app_version": "1.0",
                     "app_date": datetime.now().strftime("%Y-%m-%d")

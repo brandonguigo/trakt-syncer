@@ -3,5 +3,5 @@ from abc import ABC, abstractmethod
 
 class TraktItem(ABC):
     @abstractmethod
-    def generateTraktDict(self) -> dict:
+    def generateEpisodeTraktDict(self) -> dict:
         pass

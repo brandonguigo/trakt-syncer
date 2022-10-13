@@ -216,9 +216,6 @@ if __name__ == "__main__":
     parser.add_argument('--action', required=True, type=str,
                         help='The action required, including pushMovie or pushEpisode.')
 
-    parser.add_argument('--tvdbId', type=int,
-                        help='Title of the serie.')
-
     parser.add_argument('--season', type=int,
                         help='Season number.')
 
@@ -229,13 +226,13 @@ if __name__ == "__main__":
                         help='Progress inside the episode.')
 
     parser.add_argument('--tmdbId', type=str,
-                        help='IMDB ID.')
+                        help='TMDB ID for a movie or a show (for shows only, needs to be combined with season and episode parameters).')
 
     opts = parser.parse_args()
 
     app = Application(opts.userId,
                       opts.action,
-                      opts.tvdbId if hasattr(opts, 'tvdbId') else None,
+                      opts.tmdbId if hasattr(opts, 'tmdbId') and hasattr(opts, "episode") else None,
                       opts.season if hasattr(opts, 'season') else None,
                       opts.episode if hasattr(opts, 'episode') else None,
                       opts.progress if hasattr(opts, 'progress') else None,

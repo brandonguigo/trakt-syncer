@@ -216,7 +216,7 @@ if __name__ == "__main__":
     parser.add_argument('--action', required=True, type=str,
                         help='The action required, including pushMovie or pushEpisode.')
 
-    parser.add_argument('--tvdbId', type=int,
+    parser.add_argument('--tvdbId', type=str,
                         help='Title of the serie.')
 
     parser.add_argument('--season', type=int,

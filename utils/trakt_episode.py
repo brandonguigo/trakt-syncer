@@ -14,7 +14,7 @@ class TraktEpisode(TraktItem):
             'season': self.season_num,
             'number': self.episode_num,
             'ids': {
-                'tvdb': self.show.tvdb_id,
+                'imdb': self.show.tvdb_id,
             }
         }
 

@@ -73,7 +73,7 @@ class TraktClient:
                 if status_code == 403:
                     #TODO: refresh token here and retry
                     print("INFO: Forbidden, refreshing token and retry")
-                elif status_code != 200:
+                elif status_code != 201:
                     print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
                     sys.exit(1)
 
@@ -83,13 +83,22 @@ class TraktClient:
                 print("episode is null, cennot continue")
                 sys.exit(1)
         elif movie is not None:
-            print("Send movie to scrobble")
             print("Send %s to Trakt.tv" % movie.tmdb_id)
-            #TODO: call the trakt api with the access token
-            # Trakt['scrobble'].start(
-            #     movie=movie.generateTraktDict(),
-            #     progress=movie.progress
-            # )
+            status_code, data = self.traktApiClient.post(
+                TRAKT_API_URL + "scrobble/start",
+                {
+                    "movie": movie.generateTraktDict(),
+                    "progress": movie.progress,
+                    "app_version": "1.0",
+                    "app_date": datetime.now().strftime("%Y-%m-%d")
+                }
+            )
+            if status_code == 403:
+                #TODO: refresh token here and retry
+                print("INFO: Forbidden, refreshing token and retry")
+            elif status_code != 201:
+                print("ERROR: error during request\nstatus_code: %s\nmessage: %s" % (status_code, data))
+                sys.exit(1)
             print("Scrobble Start successful")
             sys.exit(0)
         else:

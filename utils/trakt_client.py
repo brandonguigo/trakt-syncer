@@ -164,7 +164,7 @@ class TraktClient:
     def stopScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
-                print("Send Stop Scrobble %s - S%sE%s to Trakt.tv" % (show.tmdb_id, episode.season_num, episode.episode_num))
+                print("Send Stop Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
                 #TODO: call the trakt api with the access token
                 # Trakt['scrobble'].stop(
                 #     show=show.generateTraktDict(),

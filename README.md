@@ -60,7 +60,7 @@ Tautulli > Settings > Notification Agents > New Script > Script Arguments:
   
   Select: 
         Playback Start
-        Arguments:  ---action startScrobble --userId {user_id}  --progress {progress_percent} <movie>--tmdbId {themoviedb_id}</movie> <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode>
+        Arguments: --action startScrobble --userId {user_id}  --progress {progress_percent} <movie>--tmdbId {themoviedb_id}</movie> <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode>
         
         Playback Stop
         Arguments: --action pauseScrobble --userId {user_id}  --progress {progress_percent} <movie>--tmdbId {themoviedb_id}</movie> <episode>--tvdbId {thetvdb_id} --season {season_num} --episode {episode_num}</episode>

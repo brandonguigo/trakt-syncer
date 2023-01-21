@@ -18,6 +18,6 @@ class TraktEpisode(TraktItem):
     def generateShowTraktDict(self) -> dict:
         return {
             'ids': {
-                'tmdb': self.show.tmdb_id,
+                'tvdb': self.show.tvdb_id,
             }
         }

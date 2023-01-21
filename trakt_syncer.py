@@ -89,7 +89,7 @@ class Application(object):
         self.action = action
         self.traktClient = TraktClient(config)
 
-        if season is not None and episode is not None and progress is not None:
+        if tvdb_id is not None and season is not None and episode is not None and progress is not None:
             self.show = TraktShow(tvdb_id)
             self.episode = TraktEpisode(season, episode, progress, self.show)
         elif tmdbId is not None and progress is not None:
@@ -226,13 +226,16 @@ if __name__ == "__main__":
                         help='Progress inside the episode.')
 
     parser.add_argument('--tmdbId', type=str,
-                        help='TMDB ID for a movie or a show (for shows only, needs to be combined with season and episode parameters).')
+                        help='TMDB ID for a movie')
+    
+    parser.add_argument('--tvdbId', type=str,
+                        help='TVDB ID for a show, needs to be combined with season and episode parameters.')
 
     opts = parser.parse_args()
 
     app = Application(opts.userId,
                       opts.action,
-                      opts.tmdbId if hasattr(opts, 'tmdbId') and hasattr(opts, "episode") else None,
+                      opts.tvdbId if hasattr(opts, 'tvdbId') else None,
                       opts.season if hasattr(opts, 'season') else None,
                       opts.episode if hasattr(opts, 'episode') else None,
                       opts.progress if hasattr(opts, 'progress') else None,

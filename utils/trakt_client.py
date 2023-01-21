@@ -60,7 +60,7 @@ class TraktClient:
     def startScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
-                print("Send Start Scrobble %s - S%sE%s to Trakt.tv" % (show.tmdb_id, episode.season_num, episode.episode_num))
+                print("Send Start Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
                 status_code, data = self.traktApiClient.post(
                     TRAKT_API_URL + "scrobble/start",
                     {
@@ -110,7 +110,7 @@ class TraktClient:
     def pauseScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
-                print("Send Pause Scrobble %s - S%sE%s to Trakt.tv" % (show.tmdb_id, episode.season_num, episode.episode_num))
+                print("Send Pause Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
                 #TODO: call the trakt api with the access token
                 # Trakt['scrobble'].pause(
                 #     show=show.generateTraktDict(),
@@ -164,7 +164,7 @@ class TraktClient:
     def stopScrobble(self, episode: TraktEpisode = None, show: TraktShow = None, movie: TraktMovie = None):
         if show is not None:
             if episode is not None:
-                print("Send Stop Scrobble %s - S%sE%s to Trakt.tv" % (show.tmdb_id, episode.season_num, episode.episode_num))
+                print("Send Stop Scrobble %s - S%sE%s to Trakt.tv" % (show.tvdb_id, episode.season_num, episode.episode_num))
                 #TODO: call the trakt api with the access token
                 # Trakt['scrobble'].stop(
                 #     show=show.generateTraktDict(),
